@@ -1,6 +1,6 @@
 import { prisma } from "../../config/db";
 
-const creatUser = async (payload: any) => {
+const createUser = async (payload: any) => {
   console.log({ payload });
   const createdUser = await prisma.user.create({
     data: payload,
@@ -9,5 +9,5 @@ const creatUser = async (payload: any) => {
 };
 
 export const UserService = {
-  creatUser,
+  createUser,
 };

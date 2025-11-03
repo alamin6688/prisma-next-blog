@@ -24,14 +24,16 @@ const getAllPosts = async ({
   limit = 10,
   search,
   isFeatured,
+  tags,
 }: {
   page?: number;
   limit?: number;
   search?: string;
   isFeatured?: boolean;
+  tags?: string[];
 }) => {
   const skip = (page - 1) * limit;
-  console.log({ isFeatured });
+  // console.log({ tags });
   const where: any = {
     AND: [
       search && {
@@ -41,6 +43,7 @@ const getAllPosts = async ({
         ],
       },
       typeof isFeatured === "boolean" && { isFeatured },
+      tags && tags?.length > 0 && { tags: { hasEvery: tags } },
     ].filter(Boolean),
   };
 

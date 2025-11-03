@@ -1,5 +1,6 @@
 import { Post, Prisma } from "@prisma/client";
 import { prisma } from "../../config/db";
+import { title } from "node:process";
 
 const createPost = async (payload: Prisma.PostCreateInput): Promise<Post> => {
   const result = await prisma.post.create({
@@ -21,14 +22,32 @@ const createPost = async (payload: Prisma.PostCreateInput): Promise<Post> => {
 const getAllPosts = async ({
   page,
   limit,
+  search,
 }: {
   page: number;
   limit: number;
+  search: string;
 }) => {
   const skip = (page - 1) * limit;
   const result = await prisma.post.findMany({
     skip,
     take: limit,
+    where: {
+      OR: [
+        {
+          title: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          content: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ],
+    },
   });
   return result;
 };

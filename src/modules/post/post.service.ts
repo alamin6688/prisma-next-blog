@@ -20,34 +20,34 @@ const createPost = async (payload: Prisma.PostCreateInput): Promise<Post> => {
 };
 
 const getAllPosts = async ({
-  page,
-  limit,
+  page = 1,
+  limit = 10,
   search,
+  isFeatured,
 }: {
-  page: number;
-  limit: number;
-  search: string;
+  page?: number;
+  limit?: number;
+  search?: string;
+  isFeatured?: boolean;
 }) => {
   const skip = (page - 1) * limit;
+  console.log({ isFeatured });
+  const where: any = {
+    AND: [
+      search && {
+        OR: [
+          { title: { contains: search, mode: "insensitive" } },
+          { content: { contains: search, mode: "insensitive" } },
+        ],
+      },
+      typeof isFeatured === "boolean" && { isFeatured },
+    ].filter(Boolean),
+  };
+
   const result = await prisma.post.findMany({
     skip,
     take: limit,
-    where: {
-      OR: [
-        {
-          title: {
-            contains: search,
-            mode: "insensitive",
-          },
-        },
-        {
-          content: {
-            contains: search,
-            mode: "insensitive",
-          },
-        },
-      ],
-    },
+    where,
   });
   return result;
 };

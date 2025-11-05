@@ -1,5 +1,5 @@
-import { error } from "console";
 import { prisma } from "../../config/db";
+import { Prisma } from "@prisma/client";
 
 const loginWithEmailAndPassword = async ({
   email,
@@ -25,7 +25,21 @@ const loginWithEmailAndPassword = async ({
   }
 };
 
-const authWithGoogle = async (req: Request, res: Response) => {};
+const authWithGoogle = async (data: Prisma.UserCreateInput) => {
+  let user = await prisma.user.findFirstOrThrow({
+    where: {
+      email: data.email,
+    },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data,
+    });
+  }
+
+  return user;
+};
 
 export const AuthService = {
   loginWithEmailAndPassword,
